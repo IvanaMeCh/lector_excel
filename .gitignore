@@ -185,4 +185,7 @@ pyrightconfig.json
 pyvenv.cfg
 pip-selfcheck.json
 
+# Ignorar archivos de Excel 
+*.xlsx
+
 # End of https://www.toptal.com/developers/gitignore/api/python,venv
