@@ -187,5 +187,6 @@ pip-selfcheck.json
 
 # Ignorar archivos de Excel 
 *.xlsx
-
+*.csv
+.DS_Store
 # End of https://www.toptal.com/developers/gitignore/api/python,venv

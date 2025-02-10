@@ -1,10 +1,8 @@
-import pandas as pd #importamos pandas para manejar datos en python 
+import pandas as pd
 
-#nombramos el archivo de excel
-archivo_excel = "compras.xlsx"
+base_path = "files/"
+file_name = "libro-compras-marangatu"
+datos_excel = pd.read_excel(f"{base_path}input/{file_name}.xlsx")
+datos_excel.to_csv(f"{base_path}output/{file_name}.csv")
 
-#leemos el archivo de excel 
-df= pd.read_excel(archivo_excel, engine="openpyxl")
-
-#Mostramos en la consola
-print(df)
+print(datos_excel.head(2))

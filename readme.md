@@ -26,6 +26,8 @@ python script.py
 ```
 📂 mi_proyecto_python
 │── 📄 script.py
-│── 📄 archivo.xlsx
 │── 📄 README.md
+│── 📂 files
+│   ├── 📂 input
+│   └── 📂 output
 ```
