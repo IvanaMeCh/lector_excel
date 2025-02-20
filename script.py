@@ -1,8 +1,17 @@
 import pandas as pd
+from utils import get_dataframe, save_dataframe_to_csv, limpiar_df
 
-base_path = "files/"
-file_name = "libro-compras-marangatu"
-datos_excel = pd.read_excel(f"{base_path}input/{file_name}.xlsx")
-datos_excel.to_csv(f"{base_path}output/{file_name}.csv")
+# Obtener DataFrame
+df_marangatu = get_dataframe("libro-compras-marangatu")
+print(df_marangatu.head())
 
-print(datos_excel.head(2))
+df_abaco = get_dataframe("libro-compras-abaco")
+#print(df_abaco.head())
+
+df_limpio_abaco = limpiar_df(df_abaco, "abaco")
+#print(df_limpio_abaco.head())
+save_dataframe_to_csv(df_limpio_abaco, "abaco")
+
+
+df_limpio_marangatu = limpiar_df(df_marangatu, "marangatu")
+save_dataframe_to_csv(df_limpio_marangatu, "marangatu")
