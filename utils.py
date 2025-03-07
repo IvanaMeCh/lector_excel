@@ -167,3 +167,96 @@ def verificar_existencia_comprobante(timbrado, comprobante, df_abaco, df_maranga
         return "El comprobante existe solo en Marangatu"
     else:
         return "El comprobante no existe en ningún sistema"
+
+
+def generar_reporte_comparacion(df_abaco, df_marangatu):
+    """
+    Genera un reporte CSV que indica si cada comprobante está en Abaco, Marangatu, ambos o ninguno.
+
+    Args:
+        df_abaco (DataFrame): DataFrame de Abaco
+        df_marangatu (DataFrame): DataFrame de Marangatu
+    """
+    # Obtener todos los índices únicos (timbrado, comprobante) de ambos DataFrames
+    indices_abaco = set(df_abaco.index)
+    indices_marangatu = set(df_marangatu.index)
+    todos_indices = indices_abaco.union(indices_marangatu)
+
+    # Crear listas para el nuevo DataFrame
+    timbrados = []
+    comprobantes = []
+    estados = []
+
+    # Analizar cada índice
+    for timbrado, comprobante in todos_indices:
+        timbrados.append(timbrado)
+        comprobantes.append(comprobante)
+
+        if (timbrado, comprobante) in indices_abaco and (
+            timbrado,
+            comprobante,
+        ) in indices_marangatu:
+            estados.append("En ambos")
+        elif (timbrado, comprobante) in indices_abaco:
+            estados.append("Solo en Abaco")
+        elif (timbrado, comprobante) in indices_marangatu:
+            estados.append("Solo en Marangatu")
+        else:
+            estados.append("En ninguno")
+
+    # Crear nuevo DataFrame
+    df_reporte = pd.DataFrame(
+        {"Timbrado": timbrados, "Comprobante": comprobantes, "Estado": estados}
+    )
+
+    # Guardar el reporte
+    save_dataframe_to_csv(df_reporte, "reporte_comparacion")
+    return df_reporte
+
+
+def separar_dataframes(df_abaco: pd.DataFrame, df_marangatu: pd.DataFrame) -> dict:
+    """
+    Separa los datos de Abaco y Marangatu en cuatro DataFrames según su existencia en cada sistema.
+
+    Args:
+        df_abaco (pd.DataFrame): DataFrame de Abaco (limpio)
+        df_marangatu (pd.DataFrame): DataFrame de Marangatu (limpio)
+
+    Returns:
+        dict: Diccionario con cuatro DataFrames:
+            - 'solo_abaco': Registros que solo existen en Abaco
+            - 'solo_marangatu': Registros que solo existen en Marangatu
+            - 'coincidentes_abaco': Registros coincidentes desde Abaco
+            - 'coincidentes_marangatu': Registros coincidentes desde Marangatu
+    """
+    try:
+        # Obtener los índices únicos de cada DataFrame
+        indices_abaco = set(df_abaco.index)
+        indices_marangatu = set(df_marangatu.index)
+
+        # Encontrar índices comunes y exclusivos
+        indices_comunes = indices_abaco.intersection(indices_marangatu)
+        indices_solo_abaco = indices_abaco - indices_marangatu
+        indices_solo_marangatu = indices_marangatu - indices_abaco
+
+        # Crear los DataFrames resultantes
+        resultados = {
+            "solo_abaco": df_abaco.loc[list(indices_solo_abaco)]
+            if indices_solo_abaco
+            else pd.DataFrame(),
+            "solo_marangatu": df_marangatu.loc[list(indices_solo_marangatu)]
+            if indices_solo_marangatu
+            else pd.DataFrame(),
+            "coincidentes_abaco": df_abaco.loc[list(indices_comunes)]
+            if indices_comunes
+            else pd.DataFrame(),
+            "coincidentes_marangatu": df_marangatu.loc[list(indices_comunes)]
+            if indices_comunes
+            else pd.DataFrame(),
+        }
+
+        return resultados
+
+    except Exception as e:
+        print(f"Error al separar los DataFrames: {e}")
+        return None
